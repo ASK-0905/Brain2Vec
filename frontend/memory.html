@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memory Match Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .game-container {
+            max-width: 600px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        h1 {
+            font-size: 32px;
+            color: #0a0e27;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            color: #525252;
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .stat {
+            flex: 1;
+            background: #f5f5f5;
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #525252;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #4f46e5;
+            font-family: 'Space Mono', monospace;
+        }
+
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 32px;
+            perspective: 1000px;
+        }
+
+        .card {
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+            transform-style: preserve-3d;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover:not(.matched):not(.flipped) {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
+        }
+
+        .card.flipped {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+        }
+
+        .card.matched {
+            background: linear-gradient(135deg, #10b981, #059669);
+            cursor: default;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .card.matched::after {
+            content: '✓';
+            position: absolute;
+            font-size: 24px;
+            color: white;
+            font-weight: 700;
+            animation: checkMark 0.4s ease-out;
+        }
+
+        @keyframes checkMark {
+            0% {
+                transform: scale(0) rotate(-45deg);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.2) rotate(0deg);
+            }
+            100% {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
+        }
+
+        .card.wrong {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        .message {
+            text-align: center;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #0a0e27;
+            min-height: 20px;
+        }
+
+        .completion-screen {
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .completion-screen.show {
+            display: block;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .completion-icon {
+            font-size: 60px;
+            margin-bottom: 16px;
+        }
+
+        .completion-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #10b981;
+            margin-bottom: 12px;
+        }
+
+        .completion-message {
+            color: #525252;
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+
+        .final-stats {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            text-align: left;
+        }
+
+        .final-stat {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            color: #525252;
+            font-size: 14px;
+        }
+
+        .final-stat-label {
+            font-weight: 600;
+        }
+
+        .final-stat-value {
+            color: #4f46e5;
+            font-weight: 700;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        button {
+            padding: 12px 28px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4f46e5, #4338ca);
+            color: white;
+            box-shadow: 0 4px 14px rgba(79, 70, 229, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.5);
+        }
+
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #0a0e27;
+            border: 2px solid #e5e5e5;
+        }
+
+        .btn-secondary:hover {
+            background: #e5e5e5;
+        }
+
+        .game-board.hidden {
+            display: none;
+        }
+
+        @media (max-width: 480px) {
+            .game-container {
+                padding: 24px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .game-board {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 10px;
+            }
+
+            .card {
+                font-size: 24px;
+            }
+
+            .stats {
+                gap: 8px;
+            }
+
+            .stat {
+                padding: 12px;
+            }
+
+            .stat-value {
+                font-size: 24px;
+            }
+
+            button {
+                padding: 10px 20px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="header">
+            <h1>🎮 Memory Match</h1>
+            <p class="subtitle">Test your memory by matching pairs</p>
+        </div>
+
+        <!-- Competitive-but-light background using Web Audio (no external fetch) -->
+
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-label">Matches</div>
+                <div class="stat-value" id="matches">0/8</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">Moves</div>
+                <div class="stat-value" id="moves">0</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">Time</div>
+                <div class="stat-value" id="time">0s</div>
+            </div>
+        </div>
+
+        <div class="message" id="message">Click cards to find matching pairs</div>
+
+        <div class="game-board" id="gameBoard"></div>
+
+        <div class="completion-screen" id="completionScreen">
+            <div class="completion-icon">🎉</div>
+            <div class="completion-title">You Won!</div>
+            <div class="completion-message">Great job! You've matched all pairs.</div>
+            
+            <div class="final-stats">
+                <div class="final-stat">
+                    <span class="final-stat-label">Total Moves:</span>
+                    <span class="final-stat-value" id="finalMoves">0</span>
+                </div>
+                <div class="final-stat">
+                    <span class="final-stat-label">Time Taken:</span>
+                    <span class="final-stat-value" id="finalTime">0s</span>
+                </div>
+                <div class="final-stat">
+                    <span class="final-stat-label">Efficiency:</span>
+                    <span class="final-stat-value" id="finalEfficiency">Perfect</span>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn-primary" onclick="initGame()">Play Again</button>
+                <button class="btn-secondary" onclick="window.close()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const symbols = ['🌟', '🎨', '🎭', '🎪', '🎸', '🎯', '🎲', '🎳'];
+        let cards = [];
+        let flipped = [];
+        let matched = [];
+        let moves = 0;
+        let startTime = null;
+        let gameActive = true;
+        let memoryAudioCtx = null;
+        let memoryNodes = [];
+
+        function startMemoryMusic() {
+            try {
+                memoryAudioCtx = memoryAudioCtx || new (window.AudioContext || window.webkitAudioContext)();
+                memoryAudioCtx.resume();
+                const freqs = [196, 247, 330];
+                const now = memoryAudioCtx.currentTime;
+                memoryNodes = freqs.map((f, i) => {
+                    const osc = memoryAudioCtx.createOscillator();
+                    const gain = memoryAudioCtx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.value = f;
+                    gain.gain.setValueAtTime(0.0001, now);
+                    gain.gain.exponentialRampToValueAtTime(0.025 + i * 0.01, now + 1.2);
+                    osc.connect(gain).connect(memoryAudioCtx.destination);
+                    osc.start();
+                    return { osc, gain };
+                });
+            } catch (err) {
+                console.warn('Memory music blocked:', err);
+            }
+        }
+
+        function stopMemoryMusic() {
+            if (!memoryNodes.length || !memoryAudioCtx) return;
+            const now = memoryAudioCtx.currentTime;
+            memoryNodes.forEach(({ osc, gain }) => {
+                try {
+                    gain.gain.cancelScheduledValues(now);
+                    gain.gain.setValueAtTime(gain.gain.value, now);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.8);
+                    osc.stop(now + 1);
+                } catch (e) {}
+            });
+            memoryNodes = [];
+        }
+
+        function initGame() {
+            cards = [...symbols, ...symbols].sort(() => Math.random() - 0.5);
+            flipped = [];
+            matched = [];
+            moves = 0;
+            startTime = Date.now();
+            gameActive = true;
+
+            startMemoryMusic();
+
+            document.getElementById('matches').textContent = '0/8';
+            document.getElementById('moves').textContent = '0';
+            document.getElementById('time').textContent = '0s';
+            document.getElementById('message').textContent = 'Click cards to find matching pairs';
+            document.getElementById('completionScreen').classList.remove('show');
+            document.getElementById('gameBoard').classList.remove('hidden');
+
+            renderBoard();
+            startTimer();
+        }
+
+        function renderBoard() {
+            const board = document.getElementById('gameBoard');
+            board.innerHTML = '';
+
+            cards.forEach((symbol, index) => {
+                const card = document.createElement('button');
+                card.className = 'card';
+                card.textContent = matched.includes(index) ? symbol : '?';
+                
+                if (flipped.includes(index)) {
+                    card.classList.add('flipped');
+                    card.textContent = symbol;
+                }
+                if (matched.includes(index)) {
+                    card.classList.add('matched');
+                }
+
+                card.onclick = () => flipCard(index);
+                board.appendChild(card);
+            });
+        }
+
+        function flipCard(index) {
+            if (!gameActive || flipped.length >= 2 || matched.includes(index) || flipped.includes(index)) {
+                return;
+            }
+
+            flipped.push(index);
+            renderBoard();
+
+            if (flipped.length === 2) {
+                gameActive = false;
+                moves++;
+                document.getElementById('moves').textContent = moves;
+
+                if (cards[flipped[0]] === cards[flipped[1]]) {
+                    matched.push(...flipped);
+                    document.getElementById('matches').textContent = `${matched.length / 2}/8`;
+                    document.getElementById('message').textContent = '✓ Match found!';
+                    flipped = [];
+                    gameActive = true;
+                    renderBoard();
+
+                    if (matched.length === 16) {
+                        endGame();
+                    }
+                } else {
+                    document.getElementById('message').textContent = '✗ No match, try again!';
+                    setTimeout(() => {
+                        flipped = [];
+                        gameActive = true;
+                        document.getElementById('message').textContent = 'Click cards to find matching pairs';
+                        renderBoard();
+                    }, 1000);
+                }
+            }
+        }
+
+        function startTimer() {
+            setInterval(() => {
+                if (gameActive && startTime) {
+                    const elapsed = Math.floor((Date.now() - startTime) / 1000);
+                    document.getElementById('time').textContent = elapsed + 's';
+                }
+            }, 100);
+        }
+
+        function endGame() {
+            gameActive = false;
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            const efficiency = moves <= 16 ? 'Perfect' : moves <= 20 ? 'Great' : moves <= 24 ? 'Good' : 'Fair';
+
+            document.getElementById('finalMoves').textContent = moves;
+            document.getElementById('finalTime').textContent = elapsed + 's';
+            document.getElementById('finalEfficiency').textContent = efficiency;
+
+            document.getElementById('gameBoard').classList.add('hidden');
+            document.getElementById('completionScreen').classList.add('show');
+
+            stopMemoryMusic();
+        }
+
+        initGame();
+    </script>
+</body>
+</html>

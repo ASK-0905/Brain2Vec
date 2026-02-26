@@ -1,0 +1,9 @@
+numpy
+scipy
+tensorflow==2.12
+keras
+scikit-learn
+flask
+flask-cors
+requests
+mne

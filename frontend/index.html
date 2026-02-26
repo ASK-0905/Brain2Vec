@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brain2Vec | EEG Stress Detection</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <span class="logo-icon">🧠</span>
+                <span class="logo-text">Brain<span class="accent">2</span>Vec</span>
+            </div>
+            <nav class="nav">
+                <a href="#home" class="nav-link active">Home</a>
+                <a href="#about" class="nav-link">About</a>
+                <a href="#how" class="nav-link">How It Works</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-badge">Neural Network Technology</div>
+                <h1 class="hero-title">
+                    Advanced EEG Stress
+                    <span class="hero-highlight">Detection System</span>
+                </h1>
+                <p class="hero-description">
+                    Harness the power of deep learning to analyze electroencephalography (EEG) signals 
+                    and accurately identify stress patterns in real-time. Our AI-powered system provides 
+                    instant stress assessments with personalized wellness recommendations.
+                </p>
+                <div class="hero-features">
+                    <div class="feature-item">
+                        <span class="feature-icon">⚡</span>
+                        <span class="feature-text">Real-time Analysis</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">🎯</span>
+                        <span class="feature-text">99% Accuracy</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">🧠</span>
+                        <span class="feature-text">32 EEG Channels</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="hero-gradient"></div>
+    </section>
+
+    <!-- About Section -->
+    <section class="info-section" id="about">
+        <div class="container">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="section-title">About Brain2Vec</h2>
+                    <p class="section-subtitle">AI-driven EEG stress analysis built for clarity, speed, and reliability.</p>
+                </div>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <h3>Scientific Core</h3>
+                        <p>CNN + LSTM with attention processes 32 EEG channels to detect stress signatures.</p>
+                    </div>
+                    <div class="info-item">
+                        <h3>Real-World Data</h3>
+                        <p>Trained on SM40 tasks (Relax, Stroop, Arithmetic, Mirror) to generalize across stimuli.</p>
+                    </div>
+                    <div class="info-item">
+                        <h3>Actionable Output</h3>
+                        <p>Clear stress states (Relaxed, Mild, High) plus tailored music and activity guidance.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="info-section" id="how">
+        <div class="container">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="section-title">How It Works</h2>
+                    <p class="section-subtitle">From EEG input to actionable stress relief in four steps.</p>
+                </div>
+                <div class="steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div>
+                            <h3>Input EEG</h3>
+                            <p>Paste or upload 32-channel EEG CSV data. We normalize to the model’s expected format.</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div>
+                            <h3>Deep Analysis</h3>
+                            <p>CNN-LSTM with attention extracts temporal-spatial patterns linked to stress.</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div>
+                            <h3>Stress Scoring</h3>
+                            <p>Probability-based scoring yields RELAXED / MILD STRESS / HIGH STRESS.</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div>
+                            <h3>Relief Guidance</h3>
+                            <p>Curated Spotify playlists and focused mini-activities to de-escalate stress.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Input Section -->
+    <section class="input-section">
+        <div class="container">
+            <div class="card main-card">
+                <div class="card-header">
+                    <h2 class="section-title">📊 EEG Data Input</h2>
+                    <p class="section-subtitle">Upload or paste your electroencephalography recordings in CSV format</p>
+                    <div class="data-requirements">
+                        <span class="requirement-badge">✓ 32 EEG channels required</span>
+                        <span class="requirement-badge">✓ Comma-separated format</span>
+                        <span class="requirement-badge">✓ Minimum 100 samples</span>
+                    </div>
+                </div>
+                
+                <div class="input-container">
+                    <textarea 
+                        id="eegInput" 
+                        class="eeg-input" 
+                        placeholder="Paste your EEG data here...&#10;&#10;Example format:&#10;-0.5, 0.2, 1.3, -0.8, ... (32 values per line)&#10;0.1, -0.3, 0.9, 1.1, ... (32 values per line)&#10;...&#10;&#10;Or upload a CSV file with 32 EEG channels."
+                        rows="12"
+                    ></textarea>
+                    
+                    <div class="input-actions">
+                        <button class="btn btn-secondary" onclick="loadSampleData()">
+                            <span class="btn-icon">📄</span>
+                            Load Sample Data
+                        </button>
+                        <button class="btn btn-secondary" onclick="clearInput()">
+                            <span class="btn-icon">🗑️</span>
+                            Clear
+                        </button>
+                        <button class="btn btn-primary" onclick="analyzeStress()" id="analyzeBtn">
+                            <span class="btn-icon">🔬</span>
+                            Analyze Stress Level
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Loading Spinner -->
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <p>Analyzing brain activity patterns...</p>
+    </div>
+
+    <!-- Results Section -->
+    <section class="results-section" id="resultsSection" style="display: none;">
+        <div class="container">
+            <!-- Stress Level Display -->
+            <div class="card result-card" id="stressCard">
+                <div class="stress-indicator">
+                    <div class="stress-icon" id="stressIcon">🧘</div>
+                    <h2 class="stress-level" id="stressLevel">ANALYZING...</h2>
+                    <p class="stress-message" id="stressMessage">Processing your EEG data...</p>
+                </div>
+                
+                <div class="stress-score">
+                    <div class="score-label">Stress Score</div>
+                    <div class="score-value" id="scoreValue">0%</div>
+                    <div class="score-bar">
+                        <div class="score-fill" id="scoreFill"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Relief Actions -->
+            <div id="reliefSection" style="display: none;">
+                <!-- Music Recommendations -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <span class="card-icon">🎵</span>
+                            Relaxing Music for You
+                        </h3>
+                    </div>
+                    <div class="music-grid" id="musicGrid">
+                        <!-- Music items will be inserted here -->
+                    </div>
+                </div>
+
+                <!-- Game Recommendations -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <span class="card-icon">🎮</span>
+                            Stress Relief Activities
+                        </h3>
+                    </div>
+                    <div class="games-grid" id="gamesGrid">
+                        <!-- Game items will be inserted here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <span class="logo-icon">🧠</span>
+                    <span class="logo-text">Brain<span class="accent">2</span>Vec</span>
+                </div>
+                <p class="footer-tagline">Advanced Neural Interface for Stress Detection</p>
+            </div>
+            <div class="footer-divider"></div>
+            <div class="footer-bottom">
+                <p class="footer-copyright">&copy; 2025 Brain2Vec. All rights reserved.</p>
+                <p class="footer-tech">Powered by TensorFlow • Keras • CNN-LSTM Architecture • Attention Mechanism</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

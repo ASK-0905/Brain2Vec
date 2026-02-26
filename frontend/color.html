@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Tap Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .game-container {
+            max-width: 500px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 32px;
+            color: #0a0e27;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            color: #525252;
+            font-size: 14px;
+            margin-bottom: 32px;
+        }
+
+        .game-info {
+            display: flex;
+            justify-content: space-around;
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .info-item {
+            flex: 1;
+            background: #f5f5f5;
+            padding: 16px;
+            border-radius: 12px;
+        }
+
+        .info-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #525252;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .info-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #4f46e5;
+            font-family: 'Space Mono', monospace;
+        }
+
+        .target-color {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 24px;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .instruction {
+            font-size: 14px;
+            color: #525252;
+            margin-bottom: 24px;
+            font-weight: 500;
+        }
+
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .color-circle {
+            aspect-ratio: 1;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.15s;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            font-size: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .color-circle:active {
+            transform: scale(0.95);
+        }
+
+        .color-circle:hover {
+            transform: scale(1.1);
+        }
+
+        .color-circle.correct {
+            animation: correct 0.6s ease-out;
+        }
+
+        @keyframes correct {
+            0% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(0.3);
+                opacity: 0;
+            }
+        }
+
+        .color-circle.incorrect {
+            animation: shake 0.3s ease-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .start-screen,
+        .game-screen,
+        .end-screen {
+            display: none;
+        }
+
+        .start-screen.active,
+        .game-screen.active,
+        .end-screen.active {
+            display: block;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .difficulty-select {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .difficulty-btn {
+            padding: 10px 20px;
+            border: 2px solid #e5e5e5;
+            border-radius: 8px;
+            background: white;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .difficulty-btn:hover {
+            border-color: #4f46e5;
+        }
+
+        .difficulty-btn.active {
+            background: #4f46e5;
+            color: white;
+            border-color: #4f46e5;
+        }
+
+        .end-icon {
+            font-size: 60px;
+            margin-bottom: 16px;
+            animation: bounce 0.6s ease-out;
+        }
+
+        @keyframes bounce {
+            0% {
+                transform: scale(0) translateY(-20px);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .end-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #10b981;
+            margin-bottom: 12px;
+        }
+
+        .end-message {
+            color: #525252;
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+
+        .end-stats {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            text-align: left;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            color: #525252;
+            font-size: 14px;
+        }
+
+        .stat-label {
+            font-weight: 600;
+        }
+
+        .stat-value {
+            color: #4f46e5;
+            font-weight: 700;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        button {
+            padding: 12px 28px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4f46e5, #4338ca);
+            color: white;
+            box-shadow: 0 4px 14px rgba(79, 70, 229, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.5);
+        }
+
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #0a0e27;
+            border: 2px solid #e5e5e5;
+        }
+
+        .btn-secondary:hover {
+            background: #e5e5e5;
+        }
+
+        @media (max-width: 480px) {
+            .game-container {
+                padding: 24px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .target-color {
+                width: 60px;
+                height: 60px;
+            }
+
+            .game-board {
+                gap: 12px;
+            }
+
+            .color-circle {
+                font-size: 20px;
+            }
+
+            button {
+                padding: 10px 20px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <!-- Start Screen -->
+        <div class="start-screen active">
+            <h1>🌈 Color Tap</h1>
+            <p class="subtitle">Tap the target color as fast as you can</p>
+            
+            <p class="instruction" style="margin-top: 32px; margin-bottom: 16px;">Select Difficulty:</p>
+            <div class="difficulty-select">
+                <button class="difficulty-btn active" onclick="selectDifficulty('easy')">Easy</button>
+                <button class="difficulty-btn" onclick="selectDifficulty('normal')">Normal</button>
+                <button class="difficulty-btn" onclick="selectDifficulty('hard')">Hard</button>
+            </div>
+
+            <button class="btn-primary" onclick="startGame()" style="width: 100%; margin-top: 24px;">Start Game</button>
+            <button class="btn-secondary" onclick="window.close()" style="width: 100%; margin-top: 12px;">Close</button>
+        </div>
+
+        <!-- Energetic but light background via Web Audio (no external fetch) -->
+
+        <!-- Game Screen -->
+        <div class="game-screen">
+            <h1>🌈 Color Tap</h1>
+            
+            <div class="game-info">
+                <div class="info-item">
+                    <div class="info-label">Score</div>
+                    <div class="info-value" id="score">0</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Combo</div>
+                    <div class="info-value" id="combo">0</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Time</div>
+                    <div class="info-value" id="gameTime">30s</div>
+                </div>
+            </div>
+
+            <p class="instruction">Tap the target color:</p>
+            <div class="target-color" id="targetColor"></div>
+
+            <div class="game-board" id="gameBoard"></div>
+        </div>
+
+        <!-- End Screen -->
+        <div class="end-screen">
+            <div class="end-icon">🎉</div>
+            <div class="end-title">Game Over!</div>
+            <div class="end-message">Well done! Check your performance below.</div>
+            
+            <div class="end-stats">
+                <div class="stat-row">
+                    <span class="stat-label">Final Score:</span>
+                    <span class="stat-value" id="finalScore">0</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Best Combo:</span>
+                    <span class="stat-value" id="bestCombo">0</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Accuracy:</span>
+                    <span class="stat-value" id="accuracy">100%</span>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn-primary" onclick="resetGame()">Play Again</button>
+                <button class="btn-secondary" onclick="window.close()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const colors = [
+            '#ef4444', '#f97316', '#eab308', '#22c55e', '#06b6d4', 
+            '#3b82f6', '#8b5cf6', '#ec4899', '#14b8a6', '#f59e0b'
+        ];
+
+        let currentDifficulty = 'easy';
+        let score = 0;
+        let combo = 0;
+        let bestCombo = 0;
+        let targetColor = null;
+        let gameActive = false;
+        let gameTime = 30;
+        let circleCount = 3;
+        let gameSpeed = 1;
+        let colorAudioCtx = null;
+        let colorNodes = [];
+
+        function startColorMusic() {
+            try {
+                colorAudioCtx = colorAudioCtx || new (window.AudioContext || window.webkitAudioContext)();
+                colorAudioCtx.resume();
+                const freqs = [262, 330, 392, 523];
+                const now = colorAudioCtx.currentTime;
+                colorNodes = freqs.map((f, i) => {
+                    const osc = colorAudioCtx.createOscillator();
+                    const gain = colorAudioCtx.createGain();
+                    osc.type = 'square';
+                    osc.frequency.value = f;
+                    gain.gain.setValueAtTime(0.0001, now);
+                    gain.gain.exponentialRampToValueAtTime(0.02 + i * 0.008, now + 0.8);
+                    osc.connect(gain).connect(colorAudioCtx.destination);
+                    osc.start();
+                    return { osc, gain };
+                });
+            } catch (err) {
+                console.warn('Color music blocked:', err);
+            }
+        }
+
+        function stopColorMusic() {
+            if (!colorNodes.length || !colorAudioCtx) return;
+            const now = colorAudioCtx.currentTime;
+            colorNodes.forEach(({ osc, gain }) => {
+                try {
+                    gain.gain.cancelScheduledValues(now);
+                    gain.gain.setValueAtTime(gain.gain.value, now);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.6);
+                    osc.stop(now + 0.8);
+                } catch (e) {}
+            });
+            colorNodes = [];
+        }
+
+        function selectDifficulty(level) {
+            currentDifficulty = level;
+            document.querySelectorAll('.difficulty-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            if (level === 'easy') {
+                gameTime = 45;
+                circleCount = 3;
+                gameSpeed = 1.2;
+            } else if (level === 'normal') {
+                gameTime = 30;
+                circleCount = 5;
+                gameSpeed = 1;
+            } else {
+                gameTime = 20;
+                circleCount = 7;
+                gameSpeed = 0.8;
+            }
+        }
+
+        function startGame() {
+            document.querySelector('.start-screen').classList.remove('active');
+            document.querySelector('.game-screen').classList.add('active');
+            
+            score = 0;
+            combo = 0;
+            bestCombo = 0;
+            gameActive = true;
+
+            startColorMusic();
+
+            pickNewColor();
+            generateCircles();
+            startTimer();
+        }
+
+        function pickNewColor() {
+            targetColor = colors[Math.floor(Math.random() * colors.length)];
+            document.getElementById('targetColor').style.backgroundColor = targetColor;
+        }
+
+        function generateCircles() {
+            const board = document.getElementById('gameBoard');
+            board.innerHTML = '';
+
+            const shuffled = [...colors].sort(() => Math.random() - 0.5).slice(0, circleCount);
+            
+            // Ensure target color is in the mix
+            if (!shuffled.includes(targetColor)) {
+                shuffled[Math.floor(Math.random() * shuffled.length)] = targetColor;
+            }
+
+            shuffled.sort(() => Math.random() - 0.5);
+
+            shuffled.forEach(color => {
+                const circle = document.createElement('button');
+                circle.className = 'color-circle';
+                circle.style.backgroundColor = color;
+                
+                if (color === targetColor) {
+                    circle.onclick = () => correctTap(circle);
+                } else {
+                    circle.onclick = () => wrongTap(circle);
+                }
+
+                board.appendChild(circle);
+            });
+        }
+
+        function correctTap(element) {
+            if (!gameActive) return;
+
+            score += 10 * combo;
+            combo++;
+            bestCombo = Math.max(bestCombo, combo);
+
+            element.classList.add('correct');
+            
+            document.getElementById('score').textContent = score;
+            document.getElementById('combo').textContent = combo;
+
+            setTimeout(() => {
+                pickNewColor();
+                generateCircles();
+            }, 300);
+        }
+
+        function wrongTap(element) {
+            if (!gameActive) return;
+
+            gameActive = false;
+            element.classList.add('incorrect');
+            combo = 0;
+
+            setTimeout(() => {
+                endGame();
+            }, 800);
+        }
+
+        function startTimer() {
+            let timeLeft = gameTime;
+            document.getElementById('gameTime').textContent = timeLeft + 's';
+
+            const timer = setInterval(() => {
+                timeLeft--;
+                document.getElementById('gameTime').textContent = timeLeft + 's';
+
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    gameActive = false;
+                    endGame();
+                }
+            }, 1000);
+        }
+
+        function endGame() {
+            document.querySelector('.game-screen').classList.remove('active');
+            document.querySelector('.end-screen').classList.add('active');
+
+            document.getElementById('finalScore').textContent = score;
+            document.getElementById('bestCombo').textContent = bestCombo;
+            
+            const accuracy = score > 0 ? Math.min(100, Math.round((bestCombo / (bestCombo + 1)) * 100)) : 0;
+            document.getElementById('accuracy').textContent = accuracy + '%';
+
+            stopColorMusic();
+        }
+
+        function resetGame() {
+            document.querySelector('.end-screen').classList.remove('active');
+            document.querySelector('.start-screen').classList.add('active');
+        }
+    </script>
+</body>
+</html>

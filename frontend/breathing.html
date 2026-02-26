@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Candle Breathing Exercise</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .breathing-container {
+            max-width: 600px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 32px;
+            color: #0a0e27;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            color: #525252;
+            font-size: 14px;
+            margin-bottom: 32px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .duration-select {
+            padding: 10px 16px;
+            border: 2px solid #e5e5e5;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .duration-select:hover {
+            border-color: #4f46e5;
+        }
+
+        .duration-select.active {
+            background: #4f46e5;
+            color: white;
+            border-color: #4f46e5;
+        }
+
+        .candle-area {
+            margin: 40px 0;
+            position: relative;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .candle {
+            position: relative;
+            width: 80px;
+            height: 200px;
+        }
+
+        .candle-body {
+            width: 60px;
+            height: 120px;
+            background: linear-gradient(to right, #f5deb3, #ffe4b5);
+            border-radius: 0 0 8px 8px;
+            margin: 0 auto;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .candle-wick {
+            width: 3px;
+            height: 20px;
+            background: #333;
+            margin: 0 auto;
+        }
+
+        .flame {
+            position: absolute;
+            width: 40px;
+            height: 80px;
+            left: 50%;
+            top: 0;
+            transform: translateX(-50%);
+            animation: burn 2s ease-in-out infinite;
+        }
+
+        .flame-inner {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to top, #ff6b00, #ffd700, #ffff00);
+            border-radius: 50% 50% 50% 30%;
+            filter: blur(2px);
+            opacity: 0.9;
+        }
+
+        @keyframes burn {
+            0%, 100% { transform: translateX(-50%) scaleY(0.8); opacity: 0.7; }
+            50% { transform: translateX(-50%) scaleY(1.2); opacity: 1; }
+        }
+
+        .flame.inhaling {
+            animation: grow 4s ease-in-out forwards;
+        }
+
+        @keyframes grow {
+            0% { transform: translateX(-50%) scaleY(0.6) scaleX(0.8); }
+            100% { transform: translateX(-50%) scaleY(1.3) scaleX(1.1); }
+        }
+
+        .flame.exhaling {
+            animation: dim 6s ease-in-out forwards;
+        }
+
+        @keyframes dim {
+            0% { transform: translateX(-50%) scaleY(1.3) scaleX(1.1); }
+            100% { transform: translateX(-50%) scaleY(0.6) scaleX(0.8); }
+        }
+
+        .instruction-text {
+            font-size: 20px;
+            font-weight: 700;
+            color: #0a0e27;
+            margin-bottom: 16px;
+            height: 28px;
+        }
+
+        .timer {
+            font-size: 36px;
+            font-family: 'Space Mono', monospace;
+            font-weight: 700;
+            color: #4f46e5;
+            margin-bottom: 24px;
+        }
+
+        .progress {
+            width: 100%;
+            height: 6px;
+            background: #e5e5e5;
+            border-radius: 3px;
+            margin-bottom: 24px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #4f46e5, #7c3aed);
+            border-radius: 3px;
+            width: 0;
+            transition: width 0.1s linear;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        button {
+            padding: 12px 28px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-start {
+            background: linear-gradient(135deg, #4f46e5, #4338ca);
+            color: white;
+            box-shadow: 0 4px 14px rgba(79, 70, 229, 0.4);
+        }
+
+        .btn-start:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.5);
+        }
+
+        .btn-start:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .btn-close {
+            background: #f5f5f5;
+            color: #0a0e27;
+            border: 2px solid #e5e5e5;
+        }
+
+        .btn-close:hover {
+            background: #e5e5e5;
+        }
+
+        .completion-message {
+            display: none;
+            font-size: 18px;
+            font-weight: 600;
+            color: #10b981;
+            margin-top: 20px;
+        }
+
+        .completion-message.show {
+            display: block;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .stats {
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid #e5e5e5;
+            text-align: left;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            color: #525252;
+            font-size: 14px;
+        }
+
+        .stat-label {
+            font-weight: 600;
+        }
+
+        .stat-value {
+            color: #4f46e5;
+            font-weight: 700;
+        }
+
+        @media (max-width: 480px) {
+            .breathing-container {
+                padding: 24px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .candle-area {
+                height: 220px;
+            }
+
+            .instruction-text {
+                font-size: 16px;
+            }
+
+            .timer {
+                font-size: 28px;
+            }
+
+            button {
+                padding: 10px 20px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="breathing-container">
+        <h1>🕯️ Candle Breathing</h1>
+        <p class="subtitle">Calm your mind and body with guided breathing</p>
+
+        <div class="controls">
+            <button class="duration-select active" data-duration="1" onclick="setDuration(1)">1 min</button>
+            <button class="duration-select" data-duration="3" onclick="setDuration(3)">3 min</button>
+            <button class="duration-select" data-duration="5" onclick="setDuration(5)">5 min</button>
+            <button class="duration-select" data-duration="10" onclick="setDuration(10)">10 min</button>
+        </div>
+
+        <!-- Soft ambient music via Web Audio (no external fetch) -->
+
+        <div class="candle-area">
+            <div class="candle">
+                <div class="flame" id="flame">
+                    <div class="flame-inner"></div>
+                </div>
+                <div class="candle-wick"></div>
+                <div class="candle-body"></div>
+            </div>
+        </div>
+
+        <div class="instruction-text" id="instruction">Get Ready...</div>
+        <div class="timer" id="timer">00:00</div>
+        <div class="progress">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <div class="button-group">
+            <button class="btn-start" id="startBtn" onclick="startBreathing()">Start Breathing</button>
+            <button class="btn-close" onclick="window.close()">Close</button>
+        </div>
+
+        <div class="completion-message" id="completion">✨ Great job! You've completed your breathing exercise.</div>
+
+        <div class="stats" id="stats" style="display: none;">
+            <div class="stat-row">
+                <span class="stat-label">Total Cycles:</span>
+                <span class="stat-value" id="cycleCount">0</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Duration Completed:</span>
+                <span class="stat-value" id="durationCompleted">0 min</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentDuration = 1;
+        let isBreathing = false;
+        let startTime = 0;
+        let pausedTime = 0;
+        let cycles = 0;
+        let breathingAudioCtx = null;
+        let breathingNodes = [];
+
+        function startAmbientBreathing() {
+            try {
+                breathingAudioCtx = breathingAudioCtx || new (window.AudioContext || window.webkitAudioContext)();
+                breathingAudioCtx.resume();
+
+                const freqs = [174, 220, 261.6];
+                const now = breathingAudioCtx.currentTime;
+                breathingNodes = freqs.map((f, i) => {
+                    const osc = breathingAudioCtx.createOscillator();
+                    const gain = breathingAudioCtx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.value = f;
+                    gain.gain.setValueAtTime(0.0001, now);
+                    gain.gain.exponentialRampToValueAtTime(0.03 + i * 0.01, now + 1.5);
+                    osc.connect(gain).connect(breathingAudioCtx.destination);
+                    osc.start();
+                    return { osc, gain };
+                });
+            } catch (err) {
+                console.warn('Breathing ambience blocked:', err);
+            }
+        }
+
+        function stopAmbientBreathing() {
+            if (!breathingNodes.length || !breathingAudioCtx) return;
+            const now = breathingAudioCtx.currentTime;
+            breathingNodes.forEach(({ osc, gain }) => {
+                try {
+                    gain.gain.cancelScheduledValues(now);
+                    gain.gain.setValueAtTime(gain.gain.value, now);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.8);
+                    osc.stop(now + 1);
+                } catch (e) {}
+            });
+            breathingNodes = [];
+        }
+
+        function setDuration(minutes) {
+            if (!isBreathing) {
+                currentDuration = minutes;
+                document.querySelectorAll('.duration-select').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                event.target.classList.add('active');
+            }
+        }
+
+        function startBreathing() {
+            if (isBreathing) return;
+            
+            isBreathing = true;
+            startTime = Date.now() - pausedTime;
+            document.getElementById('startBtn').disabled = true;
+            document.querySelectorAll('.duration-select').forEach(btn => btn.disabled = true);
+
+            // Start ambient tone (user gesture unlocks autoplay)
+            startAmbientBreathing();
+            
+            breathingCycle();
+        }
+
+        function breathingCycle() {
+            if (!isBreathing) return;
+
+            const elapsed = Date.now() - startTime;
+            const totalDuration = currentDuration * 60 * 1000;
+
+            if (elapsed >= totalDuration) {
+                endBreathing();
+                return;
+            }
+
+            // Inhale phase (4 seconds)
+            document.getElementById('instruction').textContent = '🫁 Breathe In...';
+            document.getElementById('flame').className = 'flame inhaling';
+            
+            setTimeout(() => {
+                if (!isBreathing) return;
+                
+                // Hold phase (2 seconds)
+                document.getElementById('instruction').textContent = '⏸️ Hold...';
+                document.getElementById('flame').classList.remove('inhaling', 'exhaling');
+                
+                setTimeout(() => {
+                    if (!isBreathing) return;
+                    
+                    // Exhale phase (6 seconds)
+                    document.getElementById('instruction').textContent = '💨 Breathe Out...';
+                    document.getElementById('flame').className = 'flame exhaling';
+                    cycles++;
+                    
+                    setTimeout(() => {
+                        if (isBreathing) {
+                            updateDisplay();
+                            breathingCycle();
+                        }
+                    }, 6000);
+                }, 2000);
+            }, 4000);
+        }
+
+        function updateDisplay() {
+            const elapsed = Date.now() - startTime;
+            const totalDuration = currentDuration * 60 * 1000;
+            const remaining = Math.max(0, totalDuration - elapsed);
+            
+            const minutes = Math.floor(remaining / 60000);
+            const seconds = Math.floor((remaining % 60000) / 1000);
+            
+            document.getElementById('timer').textContent = 
+                `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            
+            const progress = (elapsed / totalDuration) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        function endBreathing() {
+            isBreathing = false;
+            document.getElementById('flame').classList.remove('inhaling', 'exhaling');
+            document.getElementById('flame').style.animation = 'burn 2s ease-in-out infinite';
+            document.getElementById('instruction').textContent = '✨ Breathe Naturally';
+            document.getElementById('timer').textContent = '00:00';
+            document.getElementById('progressBar').style.width = '100%';
+            document.getElementById('completion').classList.add('show');
+            
+            document.getElementById('stats').style.display = 'block';
+            document.getElementById('cycleCount').textContent = cycles;
+            document.getElementById('durationCompleted').textContent = currentDuration + ' min';
+            
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('startBtn').textContent = 'Start Again';
+            document.querySelectorAll('.duration-select').forEach(btn => btn.disabled = false);
+
+            stopAmbientBreathing();
+        }
+
+        // Update timer in real-time
+        setInterval(() => {
+            if (isBreathing) {
+                updateDisplay();
+            }
+        }, 100);
+    </script>
+</body>
+</html>
